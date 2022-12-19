@@ -1,5 +1,4 @@
 *.qsf
 *.db_info
 *.flock
-*.qpf
 db/
