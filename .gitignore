@@ -1,5 +1,4 @@
-*
-!.gitignore
+
 !*.v
 !*.qpf
 !*.qsf
