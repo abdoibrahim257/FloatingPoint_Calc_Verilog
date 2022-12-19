@@ -1,4 +1,4 @@
-*.qsf
-*.db_info
-*.flock
-db/
+*
+!.gitignore
+!*.v
+!*.qpf
