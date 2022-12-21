@@ -1,6 +1,14 @@
 !*.v
 !*.qpf
 !*.qsf
+
 db/
 incremental_db/
 simulation/
+*.qsf
+*.rpt
+*.smsg
+*.summary
+*.qws
+*.bak
+*.done
