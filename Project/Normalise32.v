@@ -1,7 +1,41 @@
 
-module Normalise32 ( input wire [23:0] m, input wire[7:0] e, output wire [7:0] E, output wire [23:0] M);
-	
-	assign E = e + 8'd127;
-	assign M = m + 24'd10000000;
+module Normalise32 ( input wire [22:0] A, input wire [22:0] B, input wire[7:0] eA, input wire[7:0] eB, 
+output wire [22:0] Am, output wire [22:0] Bm,input wire en,input wire load,input wire clk,input wire rst);
 
+reg [22:0] Ai;
+reg [22:0] Bi;
+reg [7:0] eAi;
+reg [7:0] eBi;
+
+always@(posedge clk)
+begin
+	if(rst) begin
+		Ai <= 0;
+		Bi <= 0;
+		eAi <= 0;
+		eBi <= 0;
+	end
+	else if(en) begin
+		if(load) begin
+			Ai <= A;
+			Bi <= B;
+			eAi <= eA;
+			eBi <= eB;
+		end
+		else begin
+			if(eAi>eBi) begin
+				eBi <= eBi + 1;
+				Bi <= Bi >> 1;
+			end
+			else if(eBi>eAi)begin
+				eAi <= eAi + 1;
+				Ai <= Ai >> 1;
+			end
+		end
+	end
+
+end
+
+assign Am = Ai;
+assign Bm = Bi;
 endmodule	
