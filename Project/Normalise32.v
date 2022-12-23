@@ -1,4 +1,3 @@
-
 module Normalise32 ( input wire [22:0] A, input wire [22:0] B, input wire[7:0] eA, input wire[7:0] eB, 
 output wire [22:0] Am, output wire [22:0] Bm,input wire en,input wire load,input wire clk,input wire rst);
 
@@ -23,13 +22,37 @@ begin
 			eBi <= eB;
 		end
 		else begin
-			if(eAi>eBi) begin
-				eBi <= eBi + 1;
-				Bi <= Bi >> 1;
+			if(eAi[7] == eBi[7]) begin
+				if(eAi[7] == 1 && eBi[7] == 1) begin
+					if(eAi>eBi) begin
+						eAi <= eAi - 1;
+						Bi <= Bi >> 1;
+					end
+					else if(eBi>eAi)begin
+						eBi <= eBi - 1;
+						Ai <= Ai >> 1;
+					end					
+				end
+				else if(eAi[7] == 0 && eBi[7] == 0) begin
+					if(eAi>eBi) begin
+						eBi <= eBi + 1;
+						Bi <= Bi >> 1;
+					end
+					else if(eBi>eAi)begin
+						eAi <= eAi + 1;
+						Ai <= Ai >> 1;
+					end
+				end
 			end
-			else if(eBi>eAi)begin
-				eAi <= eAi + 1;
-				Ai <= Ai >> 1;
+			else begin
+				if(eAi[7] == 1) begin
+					eAi <= eAi + 1;
+					Ai <= Ai >> 1;
+				end
+				else if(eBi[7] == 1) begin
+					eBi <= eBi + 1;
+					Bi <= Bi >> 1;
+				end
 			end
 		end
 	end
