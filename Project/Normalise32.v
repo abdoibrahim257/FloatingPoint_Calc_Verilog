@@ -22,26 +22,14 @@ begin
 			eBi <= eB;
 		end
 		else begin
-			if(eAi[7] == eBi[7]) begin
-				if(eAi[7] == 1 && eBi[7] == 1) begin
-					if(eAi>eBi) begin
-						eAi <= eAi - 1;
-						Bi <= Bi >> 1;
-					end
-					else if(eBi>eAi)begin
-						eBi <= eBi - 1;
-						Ai <= Ai >> 1;
-					end					
+			if(eAi[7] == eBi[7]) begin                         
+				if(eAi>eBi) begin
+					eBi <= eBi + 1;
+					Bi <= Bi >> 1;
 				end
-				else if(eAi[7] == 0 && eBi[7] == 0) begin
-					if(eAi>eBi) begin
-						eBi <= eBi + 1;
-						Bi <= Bi >> 1;
-					end
-					else if(eBi>eAi)begin
-						eAi <= eAi + 1;
-						Ai <= Ai >> 1;
-					end
+				else if(eBi>eAi)begin
+					eAi <= eAi + 1;
+					Ai <= Ai >> 1;
 				end
 			end
 			else begin
@@ -56,7 +44,6 @@ begin
 			end
 		end
 	end
-
 end
 
 assign Am = Ai;
