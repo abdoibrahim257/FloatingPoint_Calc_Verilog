@@ -1,7 +1,6 @@
 module Normalise32 (input wire clk,input wire en,input wire rst,input wire load, input wire [22:0] A, input wire [22:0] B, input wire[7:0] eA, 
-input wire[7:0] eB, 
-output wire [23:0] Am, output wire [23:0] Bm, output wire [7:0] eAm, output wire [7:0] eBm,
-output wire OE);
+input wire[7:0] eB, output wire [23:0] Am, output wire [23:0] Bm, 
+output wire [7:0] eAm, output wire [7:0] eBm, output wire [7:0] eSm, output wire OE);
 
 reg [23:0] Ai;
 reg [23:0] Bi;
@@ -50,5 +49,6 @@ assign Am = Ai;
 assign Bm = Bi;
 assign eAm = eAi;
 assign eBm = eBi;
+assign eSm = (eA>=eB)?eAi:eBi;
 assign OE = OEi;
 endmodule	

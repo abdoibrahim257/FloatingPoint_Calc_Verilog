@@ -1,5 +1,5 @@
-module fullAdder32 (input wire clk,input wire en, input wire rst,input wire load, input wire PlusOrMinus,input wire [23:0] A, input wire [23:0] B, 
-input wire signA, input wire signB, input wire c_in, output wire [23:0] sum , output wire c_out, output wire signS);
+module fullAdder32 (input wire clk,input wire en, input wire rst,input wire load, input wire PlusOrMinus,input wire [23:0] A, input wire [23:0] B,
+input wire signA, input wire signB, input wire c_in, output wire [23:0] sum ,output wire c_out, output wire signS, output wire ready);
 	
 	//declare registers for each wire with its value going to be changed
 	reg [23:0] Ai; 
@@ -10,6 +10,7 @@ input wire signA, input wire signB, input wire c_in, output wire [23:0] sum , ou
 	reg [23:0] sumi;
 	reg c_outi;
 	reg sS;
+	reg readyi;
 	
 	always@(posedge clk) begin
 		if(rst == 1) begin // if reset is on all is zero
@@ -21,6 +22,7 @@ input wire signA, input wire signB, input wire c_in, output wire [23:0] sum , ou
 			sumi<=0;
 			c_outi<=0;
 			sS<=0;
+			readyi<=1'b0;
 		end
 		else begin
 			if(en == 1) begin //if en is on check for load if load is on accept user input else start operating
@@ -30,45 +32,55 @@ input wire signA, input wire signB, input wire c_in, output wire [23:0] sum , ou
 					sA<=signA;
 					sB<=signB;
 					PlusOrMinusi<=PlusOrMinus;
+					readyi<=1'b0;
 				end
 				else begin
 					if(!PlusOrMinusi) begin
 						if(signA == signB) begin
-							{c_outi,sumi} <= (!rst && !load)? Ai + Bi + c_in : 0;
+							{c_outi,sumi} <= (!rst & !load)? Ai + Bi + c_in : 0;
 							sS <= (sA & sB);
+							readyi<=1'b1;
 						end
 						else begin
 							if(signA) begin
-							{c_outi,sumi} <= (!rst && !load)? Bi - Ai - c_in : 0;
+							{c_outi,sumi} <= (!rst & !load)? Bi - Ai - c_in : 0;
 							sS <= (Ai<=Bi) ? 1'b0 : 1'b1;
+							c_outi<=1'b0;
+							readyi<=1'b1;
 							end
 							else if(signB) begin
-							{c_outi,sumi} <= (!rst && !load)? Ai - Bi - c_in : 0;
+							{c_outi,sumi} <= (!rst & !load)? Ai - Bi - c_in : 0;
 							sS <= (Bi<=Ai) ? 1'b0 : 1'b1;
+							c_outi<=1'b0;
+							readyi<=1'b1;
 							end
 						end
 					end
-					else begin
+					else if (PlusOrMinusi) begin
 						if(signA == signB) begin
-							if(signA) begin
-								{c_outi,sumi} <= (!rst && !load)? Bi - Ai - c_in : 0;
-								sS <= (Ai<=Bi) ? 1'b0 : 1'b1;
-							end
-							else if(signB) begin
-								{c_outi,sumi} <= (!rst && !load)? Ai - Bi - c_in : 0;
+							if(!signA) begin
+								{c_outi,sumi} <= (!rst & !load)? Ai - Bi - c_in : 0;
 								sS <= (Bi<=Ai) ? 1'b0 : 1'b1;
+								c_outi<=1'b0;
+								readyi<=1'b1;
+							end
+							else if(signA) begin
+								{c_outi,sumi} <= (!rst & !load)? Bi - Ai - c_in : 0;
+								sS <= (Ai<=Bi) ? 1'b0 : 1'b1;
+								c_outi<=1'b0;
+								readyi<=1'b1;
 							end
 						end
 						else begin
 							if(signA == 1'b1) begin
-								{c_outi,sumi} <= (!rst && !load)? Ai + Bi + c_in : 0;
+								{c_outi,sumi} <= (!rst & !load)? Ai + Bi + c_in : 0;
 								sS <= 1'b1;
-								sumi <= ~(sumi)+1'b1;
+								readyi<=1'b1;
 							end
 							else if(signB == 1'b1) begin
-								{c_outi,sumi} <= (!rst && !load)? Ai + Bi + c_in : 0;
+								{c_outi,sumi} <= (!rst & !load)? Ai + Bi + c_in : 0;
 								sS <= 1'b0;
-								sumi <= (sS) ? ~(sumi) + 1'b1 : sumi;
+								readyi<=1'b1;
 							end
 						end
 					end
@@ -76,11 +88,8 @@ input wire signA, input wire signB, input wire c_in, output wire [23:0] sum , ou
 			end
 		end
 	end
+
 	assign {c_out,sum} = {c_outi,sumi};
-	
 	assign signS = sS;
-	//we need denormalization
-	//after addition if unseen is 0 shift right until unseen is 1
-	//in subtarction shift left until unseen is 1 
-	//if in subtraction unseen is 1 shift left inly one time
+	assign ready = readyi;
 endmodule
