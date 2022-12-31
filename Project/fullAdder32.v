@@ -36,18 +36,15 @@ input wire signA, input wire signB, input wire c_in, output wire [23:0] sum , ou
 						if(signA == signB) begin
 							{c_outi,sumi} <= (!rst && !load)? Ai + Bi + c_in : 0;
 							sS <= (sA & sB);
-							sumi <= (sS) ? ~(sumi) + 1'b1 : sumi;
 						end
 						else begin
 							if(signA) begin
 							{c_outi,sumi} <= (!rst && !load)? Bi - Ai - c_in : 0;
 							sS <= (Ai<=Bi) ? 1'b0 : 1'b1;
-							sumi <= (sS) ? ~(sumi) + 1'b1 : sumi;
 							end
 							else if(signB) begin
 							{c_outi,sumi} <= (!rst && !load)? Ai - Bi - c_in : 0;
 							sS <= (Bi<=Ai) ? 1'b0 : 1'b1;
-							sumi <= (sS) ? ~(sumi) + 1'b1 : sumi;
 							end
 						end
 					end
@@ -56,12 +53,10 @@ input wire signA, input wire signB, input wire c_in, output wire [23:0] sum , ou
 							if(signA) begin
 								{c_outi,sumi} <= (!rst && !load)? Bi - Ai - c_in : 0;
 								sS <= (Ai<=Bi) ? 1'b0 : 1'b1;
-								sumi <= (sS) ? ~(sumi)+1'b1 : sumi;
 							end
 							else if(signB) begin
 								{c_outi,sumi} <= (!rst && !load)? Ai - Bi - c_in : 0;
 								sS <= (Bi<=Ai) ? 1'b0 : 1'b1;
-								sumi <= (sS) ? ~(sumi)+1'b1 : sumi;
 							end
 						end
 						else begin
