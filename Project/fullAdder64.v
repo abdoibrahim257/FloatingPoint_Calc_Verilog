@@ -40,6 +40,6 @@ input wire signA, input wire signB, input wire c_in, output wire [52:0] sum , ou
 			end
 		end
 	end
-	assign {c_out,sum} = (load == 0 && rst == 0) ? Ai + Bi + c_in : 0;
+	assign {c_out,sum} = (!(load) && !(rst)) ? Ai + Bi + c_in : 0;
 	
 endmodule
