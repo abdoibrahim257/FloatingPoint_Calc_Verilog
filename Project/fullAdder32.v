@@ -45,7 +45,7 @@ input wire signA, input wire signB, input wire c_in, output wire [23:0] sum ,out
 					sB<=signB;
 					PlusOrMinusi<=PlusOrMinus;
 					readyi<=1'b0;
-					#3 flag <= 1'b0;
+					flag <= 1'b0;
 				end
 				else begin
 					if(!PlusOrMinusi) begin

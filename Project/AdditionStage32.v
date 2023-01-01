@@ -23,7 +23,7 @@ Normalise32 N(clk,en,rst,load,A[22:0],B[22:0],A[30:23],B[30:23],An,Bn,eAn,eBn,eS
 
 assign fullAdderEn = (NormaliserOE)? 1'b1: 1'b0;
 
-fullAdder32 FA(clk,en,rst,fullAdderEn,PlusOrMinus,An,Bn,A[31],B[31],cin,sum,cout,signS,readyi);
+fullAdder32 FA(clk,en,rst,load,PlusOrMinus,An,Bn,A[31],B[31],cin,sum,cout,signS,readyi);
 
 
 

@@ -1,4 +1,4 @@
-module FPU(input [63:0] A, input [63:0] B, input clk, nreset, input[1:0] operation, fpuType, input ,output [63:0] Result, output Done);
+module FPU(input [63:0] A, input [63:0] B, input[1:0] operation, input fpuType, clk, en ,reset, load, input cin ,output [63:0] Result, output Done, cout);
 
 	localparam SP = 2'd0;
 	localparam DP = 2'd1;
@@ -7,12 +7,42 @@ module FPU(input [63:0] A, input [63:0] B, input clk, nreset, input[1:0] operati
 	reg [1:0] state_reg;
 	reg [1:0] state_next;
 	
+	
+	//registers
+	reg [31:0] tempOutput;
+	reg tempDone;
+	reg tempCout;
+	
+	
+	//wires 32bit
+	wire coutAdd, doneAdd; //addition
+	wire coutSub, doneSub; //subtraction 
+	
+	wire [31:0] additionValue32;
+	wire[31:0] subtractionValue32;
+	wire[31:0] multiplicationValue32;
+	
 	always@(posedge clk, posedge reset) begin
-		if(nreset) 
+		if(reset) 
 			state_reg <= IDLE;
 		else
 			state_reg <= state_next;
 	end
+	
+//32
+
+//add
+AdditionStage32 Adder32(clk, en, reset, load, 1'b0, A[31:0], B[31:0], cin, additionValue32, coutAdd, doneAdd);
+				
+//subtract7766
+AdditionStage32 Subtractior32(clk, en, reset, load, 1'b1, A[31:0], B[31:0], cin, subtractionValue32, coutSub, doneSub);
+				
+//multiply
+mul32 multiplication32(clk, en, reset, load,A[31:0], B[31:0], multiplicationValue32);
+
+//division
+				
+
 	
 	always@( operation, state_reg, fpuType, A, B) begin //sw
 		//switch case on the type of operation
@@ -23,18 +53,22 @@ module FPU(input [63:0] A, input [63:0] B, input clk, nreset, input[1:0] operati
 				else
 					state_next = DP;
 			end
-			SP: begin //32bit
+			SP: begin //32bit			
 				case (operation)
-					2'b00 : begin //clk, en, rst , load, 0, A, B, cin, result, cout, Done 
-						
+					2'b00 : begin 
+						tempOutput = additionValue32;
+						tempCout = coutAdd;
+						tempDone = doneAdd;
 					end
-					2'b01 : begin //clk, en, rst , load, 1, A, B, cin, result, cout, Done 
-						
+					2'b01 : begin 
+						tempOutput = subtractionValue32;
+						tempCout = coutSub;
+						tempDone = doneSub;
 					end
-					2'b10 : begin //clk , en, rst, load, A, B, result
-						
+					2'b10 : begin //ask ramy
+						tempOutput = multiplicationValue32;
 					end
-					2'b11 : begin //clk , en , rst, load, loadA, loadN, N, D, result
+					2'b11 : begin //ask omar
 						
 					end	
 					default : begin
@@ -63,4 +97,5 @@ module FPU(input [63:0] A, input [63:0] B, input clk, nreset, input[1:0] operati
 			end
 		endcase
 	end
+	
 endmodule
