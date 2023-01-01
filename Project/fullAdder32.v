@@ -1,4 +1,10 @@
+<<<<<<< Updated upstream
 module fullAdder32 (input wire clk,input wire en, input wire rst, input wire PlusOrMinus,input wire [23:0] A, input wire [23:0] B,
+=======
+`timescale 1 ns/ 10 ps
+
+module fullAdder32 (input wire clk,input wire en, input wire rst,input wire load, input wire PlusOrMinus,input wire [23:0] A, input wire [23:0] B,
+>>>>>>> Stashed changes
 input wire signA, input wire signB, input wire c_in, output wire [23:0] sum ,output wire c_out, output wire signS, output wire ready);
 	
 	//declare registers for each wire with its value going to be changed

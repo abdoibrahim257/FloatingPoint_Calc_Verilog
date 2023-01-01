@@ -1,3 +1,5 @@
+`timescale 1 ns/ 10 ps
+
 module AdditionStage32(input wire clk,input wire en,input wire rst,input wire load,input wire PlusOrMinus,
 input wire [31:0] A, input wire [31:0] B, input wire cin, output wire [31:0] sumFinal, output wire cout,output wire ready);
 

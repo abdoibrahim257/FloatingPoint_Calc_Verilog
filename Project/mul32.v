@@ -1,3 +1,5 @@
+`timescale 1 ns/ 10 ps
+
 module mul32 (
     input wire clk, 
     input wire en, 

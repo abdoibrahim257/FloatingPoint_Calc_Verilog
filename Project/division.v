@@ -1,5 +1,5 @@
-module division (input wire clk, input wire en, input wire rst, input wire load, input wire loadN,loadA,
-    input wire [31:0] N, input wire [31:0] D, output wire [31:0] result);
+module division (input wire clk, input wire en, input wire rst, input wire load,
+	input wire [31:0] N, input wire [31:0] D, output wire [31:0] result);
 
 reg overflow, underflow;
 wire sign;
@@ -26,54 +26,35 @@ assign sign = N[31] ^ D[31];
 //Xo (48/17 - 32/17 * D)
 
 mul32 mul1(clk,en,rst,load,C2,tempWireD,tempWire);
-//assign tempWire = tempResult;
-AdditionStage32 add1(clk,en,rst,load,1'b1,C1,tempWire,cin,wireX,cout,ready);
+AdditionStage32 add1(clk,en,rst,load,1'b1,C1,tempWire,1'b0,wireX,cout,ready);
 
 //first iteration (Xn = Xn(2 - Xn*D))
 
-//assign wireX = Xn;
 mul32 mul2(clk,en,rst,load,wireX,tempWireD,temp1);
-//assign tempWire = tempResult;
-AdditionStage32 add2(clk,en,rst,load, 1'b1,numTwo,temp1,cin,temp2,cout,ready);
-//assign tempWire = tempResult2;
+AdditionStage32 add2(clk,en,rst,load, 1'b1,numTwo,temp1,1'b0,temp2,cout,ready);
 mul32 mul3(clk,en,rst,load,wireX,temp2,Xn);
 
 //second iteration (Xn = Xn(2 - Xn*D))
 
-//assign wireX = Xn;
 mul32 mul4(clk,en,rst,load,Xn,tempWireD,temp3);
-//assign tempWire = tempResult;
-AdditionStage32 add3(clk,en,rst,load, 1'b1,numTwo,temp3,temp4);
-//assign tempWire = tempResult2;
+AdditionStage32 add3(clk,en,rst,load, 1'b1,numTwo,temp3,1'b0,temp4,cout,ready);
 mul32 mul5(clk,en,rst,load,Xn,temp4,Xn1);
 
 //third iteration (Xn = Xn(2 - Xn*D))
 
-//assign wireX = Xn;
 mul32 mul6(clk,en,rst,load,Xn1,tempWireD,temp5);
-//assign tempWire = tempResult;
-AdditionStage32 add4(clk,en,rst,load, 1'b1,numTwo,temp5,temp6);
-//assign tempWire = tempResult2;
+AdditionStage32 add4(clk,en,rst,load, 1'b1,numTwo,temp5,1'b0,temp6,cout,ready);
 mul32 mul7(clk,en,rst,load,Xn1,temp6,Xn2);
 
 //fourth iteration (Xn = Xn(2 - Xn*D))
 
-//assign wireX = Xn;
 mul32 mul8(clk,en,rst,load,Xn2,tempWireD,temp7);
-//assign tempWire = tempResult;
-AdditionStage32 add5(clk,en,rst,load, 1'b1,numTwo,temp7,temp8);
-//assign tempWire = tempResult2;
+AdditionStage32 add5(clk,en,rst,load, 1'b1,numTwo,temp7,1'b0,temp8,cout,ready);
 mul32 mul9(clk,en,rst,load,Xn2,temp8,Xn3);
-// always@(*) begin
-// 	Xn = tempResult;
-// end
 
 //Final
 
-//assign wireX = Xn;
 mul32 mul10(clk,en,rst,load,tempWireN,Xn3,tempResult);
-
 assign result = {sign,tempResult[30:0]};
 
 endmodule
-//Handle 
