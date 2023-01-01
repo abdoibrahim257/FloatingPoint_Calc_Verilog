@@ -22,7 +22,7 @@ input wire signA, input wire signB, input wire c_in, output wire [52:0] sum ,out
 		else
 			ld2<=0;
 	end
-	
+
 	always@(posedge clk) begin
 		if(rst == 1) begin // if reset is on all is zero
 			Ai<=0;
