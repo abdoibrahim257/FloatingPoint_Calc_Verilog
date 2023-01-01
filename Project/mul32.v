@@ -1,4 +1,4 @@
-module mul (
+module mul32 (
     input wire load, 
     input wire clk, 
     input wire rst, 
