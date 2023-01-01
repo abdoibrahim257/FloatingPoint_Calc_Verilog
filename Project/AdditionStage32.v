@@ -1,4 +1,4 @@
-module AdditionStage32(input wire clk,input wire en,input wire rst,input wire loadN,loadA,input wire PlusOrMinus,
+module AdditionStage32(input wire clk,input wire en,input wire rst,input wire load,input wire PlusOrMinus,
 input wire [31:0] A, input wire [31:0] B, input wire cin, output wire [31:0] sumFinal, output wire cout,output wire ready);
 
 wire [23:0] An;
@@ -19,11 +19,11 @@ wire readyi;
 reg readyFinal = 1'b0;
 
 reg complemented = 1'b0;
-Normalise32 N(clk,en,rst,loadN,A[22:0],B[22:0],A[30:23],B[30:23],An,Bn,eAn,eBn,eSn,NormaliserOE);
+Normalise32 N(clk,en,rst,load,A[22:0],B[22:0],A[30:23],B[30:23],An,Bn,eAn,eBn,eSn,NormaliserOE);
 
 assign fullAdderEn = (NormaliserOE)? 1'b1: 1'b0;
 
-fullAdder32 FA(clk,fullAdderEn,rst,loadA,PlusOrMinus,An,Bn,A[31],B[31],cin,sum,cout,signS,readyi);
+fullAdder32 FA(clk,en,rst,fullAdderEn,PlusOrMinus,An,Bn,A[31],B[31],cin,sum,cout,signS,readyi);
 
 
 

@@ -1,97 +1,79 @@
-module division (input wire clk, input wire en, input wire rst, input wire load,
-    input wire [31:0] N, input wire [31:0] D, output wire [31:0] result)
+module division (input wire clk, input wire en, input wire rst, input wire load, input wire loadN,loadA,
+    input wire [31:0] N, input wire [31:0] D, output wire [31:0] result);
 
-reg [22:0] N_Mantissa,D_Mantissa;
-reg [7:0] N_Exponent,D_Exponent,Temp_Exponent,diff_Exponent,Exponent;
-reg N_sign,D_sign,Sign;
-//reg [22:0] Fn,Dn,Nn;
 reg overflow, underflow;
-reg [31:0] Xn, temp_result, temp_result2;
-reg [31:0] C1 = {1'b0, 8'd21, 23'b0110_1001_0110_1001_0110_100}; // 48/17
-reg [31:0] C2 = {1'b0, 8'b19, 23'b1110_0001_1110_0001_1110_000}; // 32/17
-reg [31:0] numTwo = 32d'2;
-        
-mul mul1(clk,en,rst,load,C2,D,temp_result, overflow, underflow);
-add add1(clk,en,rst,load,C1,temp_result,1,Xn); //to be changed
+wire sign;
+wire cin,cout,ready;
+wire [31:0] Xn,Xn1,Xn2,Xn3,Xn4;
+wire [31:0] tempResult, tempResult2;
+wire [31:0] C1 = {1'b0, 8'd21, 23'b0110_1001_0110_1001_0110_100}; // 48/17
+wire [31:0] C2 = {1'b0, 8'd19, 23'b1110_0001_1110_0001_1110_000}; // 32/17
+wire [31:0] numTwo = 32'b0_00000001_00000000000000000000000;
+wire [31:0] tempWireN, tempWireD;
+wire [31:0] tempWire,tempWire2, wireX;
+wire [31:0] temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9;
+
+wire [31:0] newN, newD;
+
+normalizeForDivision norm(N, D, newN, newD);
+assign tempWireN = newN;
+assign tempWireD = newD;
+
+
+assign sign = N[31] ^ D[31];
+
+
+//Xo (48/17 - 32/17 * D)
+
+mul32 mul1(clk,en,rst,load,C2,tempWireD,tempWire);
+//assign tempWire = tempResult;
+AdditionStage32 add1(clk,en,rst,load,1'b1,C1,tempWire,cin,wireX,cout,ready);
 
 //first iteration (Xn = Xn(2 - Xn*D))
 
-mul mul2(clk,en,rst,load,Xn,D,temp_result, overflow, underflow);
-add add2(clk,en,rst,load,numTwo,temp_result,1,temp_result2); //to be changed
-mul mul3(clk,en,rst,load,Xn,temp_result2,temp_result, overflow, underflow);
-Xn = temp_result;
+//assign wireX = Xn;
+mul32 mul2(clk,en,rst,load,wireX,tempWireD,temp1);
+//assign tempWire = tempResult;
+AdditionStage32 add2(clk,en,rst,load, 1'b1,numTwo,temp1,cin,temp2,cout,ready);
+//assign tempWire = tempResult2;
+mul32 mul3(clk,en,rst,load,wireX,temp2,Xn);
 
 //second iteration (Xn = Xn(2 - Xn*D))
 
-mul mul4(clk,en,rst,load,Xn,D,temp_result, overflow, underflow);
-add add3(clk,en,rst,load,numTwo,temp_result,1,temp_result2); //to be changed
-mul mul5(clk,en,rst,load,Xn,temp_result2,temp_result, overflow, underflow);
-Xn = temp_result;
+//assign wireX = Xn;
+mul32 mul4(clk,en,rst,load,Xn,tempWireD,temp3);
+//assign tempWire = tempResult;
+AdditionStage32 add3(clk,en,rst,load, 1'b1,numTwo,temp3,temp4);
+//assign tempWire = tempResult2;
+mul32 mul5(clk,en,rst,load,Xn,temp4,Xn1);
 
 //third iteration (Xn = Xn(2 - Xn*D))
 
-mul mul6(clk,en,rst,load,Xn,D,temp_result, overflow, underflow);
-add add4(clk,en,rst,load,numTwo,temp_result,1,temp_result2); //to be changed
-mul mul7(clk,en,rst,load,Xn,temp_result2,temp_result, overflow, underflow);
-Xn = temp_result;
+//assign wireX = Xn;
+mul32 mul6(clk,en,rst,load,Xn1,tempWireD,temp5);
+//assign tempWire = tempResult;
+AdditionStage32 add4(clk,en,rst,load, 1'b1,numTwo,temp5,temp6);
+//assign tempWire = tempResult2;
+mul32 mul7(clk,en,rst,load,Xn1,temp6,Xn2);
 
 //fourth iteration (Xn = Xn(2 - Xn*D))
 
-mul mul8(clk,en,rst,load,Xn,D,temp_result, overflow, underflow);
-add add5(clk,en,rst,load,numTwo,temp_result,1,temp_result2); //to be changed
-mul mul9(clk,en,rst,load,Xn,temp_result2,temp_result, overflow, underflow);
-Xn = temp_result;
+//assign wireX = Xn;
+mul32 mul8(clk,en,rst,load,Xn2,tempWireD,temp7);
+//assign tempWire = tempResult;
+AdditionStage32 add5(clk,en,rst,load, 1'b1,numTwo,temp7,temp8);
+//assign tempWire = tempResult2;
+mul32 mul9(clk,en,rst,load,Xn2,temp8,Xn3);
+// always@(*) begin
+// 	Xn = tempResult;
+// end
 
 //Final
 
-mul mul10(clk,en,rst,load,N,Xn,result, overflow, underflow);
+//assign wireX = Xn;
+mul32 mul10(clk,en,rst,load,tempWireN,Xn3,tempResult);
 
-// always @(posedge clk) begin
-//     if (rst) begin
-//         N_Mantissa <= 0;
-//         D_Mantissa <= 0;
-//         N_Exponent <= 0;
-//         D_Exponent <= 0;
-//         N_sign <= 0;
-//         D_sign <= 0;
-//         Temp_Mantissa <= 0;
+assign result = {sign,tempResult[30:0]};
 
-//     end
-//     else if (en) begin
-//         if(load) begin
-//             N_Mantissa = N[22:0];
-//             N_Exponent = N[30:23];
-//             N_sign = N[31];
-
-//             D_Mantissa = D[22:0];
-//             D_Exponent = D[30:23];
-//             D_sign = D[31];
-
-//         end
-//         else begin
-            
-//             Temp_Exponent = N_Exponent - D_Exponent + 127;
-
-
-
-//             integer i;
-//             for(i=0;i<8;i=i+1) begin
-//                 mul mul1(clk,en,rst,load,)
-//             end
-
-//             //Temp_Mantissa = N_Mantissa * D_Mantissa;
-//             // Mantissa = Temp_Mantissa[47] ? Temp_Mantissa[46:24] : Temp_Mantissa[45:23];
-//             // Exponent = Temp_Mantissa[47] ? Temp_Exponent + 1'b1 : Temp_Exponent;
-//             Sign = N_sign ^ D_sign;
-//             result = {Sign,Exponent,Mantissa};
-
-//             if (Temp_result[30:23] < 0) begin
-//                 Temp_underflow <= 1;
-//             end else begin
-//                 Temp_underflow <= 0;
-//             end
-//         end
-//     end
-// end
-
-// endmodule
+endmodule
+//Handle 
