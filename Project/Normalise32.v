@@ -20,8 +20,8 @@ begin
 		if(load) begin
 			Ai <= {1'b1,A};
 			Bi <= {1'b1,B};
-			eAi <= eA + 127;
-			eBi <= eB + 127;
+			eAi <= eA;
+			eBi <= eB;
 		end
 		else begin                       
 				if(eAi>eBi) begin
