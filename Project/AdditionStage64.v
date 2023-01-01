@@ -54,17 +54,14 @@ end
 
 end
 
-always@(*) begin
+assign NaN = (A[63] == 'bX || B[63] == 'bX) ? 1'b1:1'b0;
 
-
-assign NaN = (A[63] == 'bX || B[63] == 'bX) ? One:Zero;
 assign PosInf = (((A[62:52] == 11'b11111111111) && (A[63] == 1'b0) )|| ((B[62:52] == 11'b11111111111) && (B[63] == 1'b0) )) ?1'b1:1'b0;
 assign NegInf = (((A[62:52] == 11'b11111111111) && (A[63] == 1'b1) )|| ((B[62:52] == 11'b11111111111) && (B[63] == 1'b1) )) ?1'b1:1'b0;
 
-end
 
 assign ready = readyFinal;
-assign sumFinal[51:0] = (NaN)? 52'bXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX : (PosInf)? 52'b0 : (NegInf)? 52'b0 :(ready) ? sumi[51:0] : sumi[51:0];
+assign sumFinal[51:0] = (NaN)? 52'bXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxx : (PosInf)? 52'b0 : (NegInf)? 52'b0 :(ready) ? sumi[51:0] : sumi[51:0];
 assign sumFinal[62:52] = (NaN || PosInf || NegInf )? 11'b11111111111 :(ready) ? eSi : eSi;
 assign sumFinal[63] = (NaN)? 1'bX: (PosInf)? 1'b0 : (NegInf)? 1'b1 :(ready) ? signS : signS;
 
