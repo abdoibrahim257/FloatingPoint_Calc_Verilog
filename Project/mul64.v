@@ -1,8 +1,8 @@
 module mul64 (
-    input wire load, 
     input wire clk, 
-    input wire rst, 
     input wire en, 
+    input wire rst, 
+    input wire load,  
     input wire[63:0] A, 
     input wire[63:0] B, 
     output reg[63:0] result

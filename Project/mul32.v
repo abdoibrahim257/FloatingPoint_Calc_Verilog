@@ -1,8 +1,8 @@
 module mul32 (
-    input wire load, 
     input wire clk, 
-    input wire rst, 
     input wire en, 
+    input wire rst, 
+    input wire load, 
     input wire[31:0] A, 
     input wire[31:0] B, 
     output reg[31:0] result

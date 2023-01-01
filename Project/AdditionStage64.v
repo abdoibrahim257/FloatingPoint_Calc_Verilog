@@ -1,4 +1,4 @@
-module AdditionStage64(input wire clk,input wire en,input wire rst,input wire loadN,loadA,input wire PlusOrMinus,
+module AdditionStage64(input wire clk,input wire en,input wire rst,input wire load,input wire PlusOrMinus,
 input wire [63:0] A, input wire [63:0] B, input wire cin, output wire [63:0] sumFinal, output wire cout,output wire ready);
 
 wire [52:0] An;
@@ -19,12 +19,11 @@ wire readyi;
 reg readyFinal = 1'b0;
 
 reg complemented = 1'b0;
-Normalise64 N(clk,en,rst,loadN,A[51:0],B[51:0],A[62:52],B[62:52],An,Bn,eAn,eBn,eSn,NormaliserOE);
+Normalise64 N(clk,en,rst,load,A[51:0],B[51:0],A[62:52],B[62:52],An,Bn,eAn,eBn,eSn,NormaliserOE);
 
 assign fullAdderEn = (NormaliserOE)? 1'b1: 1'b0;
 
-fullAdder64 FA(clk,fullAdderEn,rst,loadA,PlusOrMinus,An,Bn,A[63],B[63],cin,sum,cout,signS,readyi);
-
+fullAdder64 FA(clk,en,rst,fullAdderEn,PlusOrMinus,An,Bn,A[63],B[63],cin,sum,cout,signS,readyi);
 
 
 always@(*) begin
